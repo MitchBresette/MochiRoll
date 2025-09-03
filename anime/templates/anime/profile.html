@@ -1,0 +1,74 @@
+{% extends "anime/base.html" %}
+
+{% block content %}
+
+<style>
+    body {
+        background-color: #000; /* page black */
+        color: #fff; /* default text white */
+    }
+
+    .watchlist-table {
+        background-color: #555; /* gray table */
+        color: #000; /* dark text for contrast */
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .watchlist-table th, .watchlist-table td {
+        border: 1px solid #444;
+        padding: 10px;
+        text-align: center;
+    }
+
+    .watchlist-table th {
+        background-color: #666;
+    }
+
+    .watchlist-table tr:hover {
+        background-color: #777; /* subtle hover effect */
+    }
+
+    h2 {
+        margin-bottom: 1rem;
+    }
+
+    .btn-remove {
+        padding: 5px 10px;
+        font-size: 14px;
+    }
+</style>
+
+<div class="container mt-4 d-flex justify-content-center">
+    <div style="max-width: 800px; width: 100%;">
+        <h2 class="text-center">Watch List</h2>
+
+        <table class="watchlist-table table table-striped table-bordered text-center">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td>{{ item.title }}</td>
+                    <td>
+                        <form method="post" action="{% url 'remove_from_watchlist' item.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm btn-remove">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3">Nothing Yet</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

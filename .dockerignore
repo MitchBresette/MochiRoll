@@ -1,0 +1,14 @@
+# Ignore Python cache
+__pycache__/
+*.pyc
+
+# Ignore local environment files
+.env
+*.sqlite3
+
+# Ignore IDE files
+.idea/
+*.iml
+
+# Ignore logs
+*.log

@@ -1,0 +1,94 @@
+{% extends "anime/base.html" %}
+
+{% block title %}MochiRoll{% endblock %}
+
+{% block content %}
+
+<style>
+        .anime-box-img {
+            max-width: 300px;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+</style>
+
+<h1>Welcome to MochiRoll</h1>
+<h2>Roll A Random Anime</h2>
+<button id="roll-btn" onclick="fetchAnime()">Roll</button>
+
+<div id="anime-box"></div>
+
+{% if user.is_authenticated %}
+    <button id="add-btn" style="display:none;" onclick="addToWatchlist()">Add To Watchlist</button>
+{% else %}
+    <p><a href="{% url 'login' %}">Login</a> to save to your watchlist</p>
+{% endif %}
+
+<script>
+let currentAnime = null;
+
+async function fetchAnime() {
+    try {
+        const res = await fetch("{% url 'random_anime' %}");
+        const anime = await res.json();
+        currentAnime = anime;
+
+        const box = document.getElementById("anime-box");
+        box.innerHTML = `
+            <h2>${anime.title}</h2>
+            ${anime.main_picture && anime.main_picture.large
+                ? `<img src="${anime.main_picture.large}" alt="${anime.title}" class="anime-box-img">`
+                : `<img src="/static/images/no-cover.png" alt="No image available" class="anime-box-img">`}
+        `;
+
+        // Show the Add button if user is logged in
+        const addBtn = document.getElementById("add-btn");
+        if (addBtn) addBtn.style.display = "block";
+
+    } catch (err) {
+        console.error("Failed to fetch anime:", err);
+        document.getElementById("anime-box").innerHTML = "<p>Failed to fetch anime. Try again later.</p>";
+    }
+}
+
+async function addToWatchlist() {
+    if (!currentAnime) return;
+
+    try {
+        const res = await fetch("{% url 'add_to_watchlist' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCookie("csrftoken")
+            },
+            body: JSON.stringify({ title: currentAnime.title })
+        });
+
+        if (res.ok) {
+            alert("Added to your Watchlist");
+        } else {
+            alert("Failed to add, are you logged in?");
+        }
+    } catch (err) {
+        console.error("Error adding to watchlist:", err);
+    }
+}
+
+// CSRF helper function
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+        const cookies = document.cookie.split(";");
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + "=")) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+
+{% endblock %}
