@@ -1,6 +1,6 @@
  Random Anime Generator - https://mochiroll.net/ 
 
-MochiROll is a Django web application that uses the MyAnimeList API to fetch the top 4000 anime titles.  
+MochiRoll is a Django web application that uses the MyAnimeList API to fetch the top 4000 anime titles.  
 Users can roll a random anime and save it to their personal watchlist after creating an account.
 
 - Fetches anime data from MyAnimeList and stores it locally in a JSON file.  
